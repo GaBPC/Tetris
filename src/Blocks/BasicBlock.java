@@ -8,6 +8,7 @@ package Blocks;
 import java.util.ArrayList;
 import java.util.Iterator;
 import org.newdawn.slick.Color;
+import org.newdawn.slick.geom.Point;
 import org.newdawn.slick.geom.Polygon;
 import org.newdawn.slick.geom.Shape;
 
@@ -15,21 +16,17 @@ import org.newdawn.slick.geom.Shape;
  *
  * @author gabriel
  */
-public abstract class BasicBlock extends Polygon {
-
-    private int cellWidth, cellHeigth;
+public abstract class BasicBlock {
 
     private Color color = null;
-    private ArrayList<Cell> cells = null;
+    private ArrayList<Point> points = null;
     private boolean[][] model = null;
     private int topRow = 0;
     private int leftRow = 0;
 
-    public BasicBlock(boolean[][] model, Color color, int centerX, int centerY, int cell_width, int cell_heigth) {
+    public BasicBlock(boolean[][] model, Color color) {
 
         this.model = model;
-        this.cellWidth = cell_width;
-        this.cellHeigth = cell_heigth;
         this.color = color;
 
         this.generatePoints();
@@ -37,15 +34,21 @@ public abstract class BasicBlock extends Polygon {
     }
 
     private void generatePoints() {
-        this.cells = new ArrayList<>();
+        this.points = new ArrayList<>();
 
         for (int i = 0; i < model.length; i++) {
             for (int j = 0; j < model[i].length; j++) {
                 if (model[i][j] == true) {
-                    this.cells.add(new Cell((j + this.leftRow) * this.cellWidth, (i + this.topRow) * this.cellHeigth, this.cellWidth, this.cellHeigth));
+                    this.points.add(new Point(j + this.leftRow, i + this.topRow));
                 }
             }
         }
+    }
+    
+    public void resetBlock(){
+        this.leftRow = 0;
+        this.topRow = 0;
+        this.generatePoints();
     }
 
     /**
@@ -53,7 +56,6 @@ public abstract class BasicBlock extends Polygon {
      *
      */
     public final void rotate() {
-
         // Transposes the matrix
         boolean[][] modelTemp = new boolean[this.model[0].length][this.model.length];
         for (int i = 0; i < this.model.length; i++) {
@@ -71,92 +73,28 @@ public abstract class BasicBlock extends Polygon {
             }
         }
 
-
         this.model = modelTemp;
 
-
         this.generatePoints();
-
     }
 
-    /**
-     * Function that calculates the position of the pixel that is down the
-     * screen.
-     *
-     * @return the postion of that pixel
-     */
-    public final float getBottomPosition() {
-
-        /**
-         * Since the Y + axis is oriented downwards on the screen, the pixel
-         * above will be in (x, 0)
-         */
-        float ret = 0;
-
-        for (Cell cell : this.cells) {
-            if (cell.getBottomPosition() > ret) {
-                ret = cell.getBottomPosition();
-            }
-        }
-
-        return ret;
-    }
-
-    /**
-     * Function that calculates the position of the pixel to the right of the
-     * screen.
-     *
-     * @return the postion of that pixel
-     */
-    public final float getRightPosition() {
-
-        float ret = 0;
-
-        for (Cell cell : this.cells) {
-            if (cell.getRightPosition() > ret) {
-                ret = cell.getRightPosition();
-            }
-        }
-
-        return ret;
-    }
-
-    /**
-     * Function that calculates the position of the pixel to the left of the
-     * screen.
-     *
-     * @return the postion of that pixel
-     */
-    public final float getLeftPosition() {
-
-        float ret = 99999999;
-
-        for (Cell cell : this.cells) {
-            if (cell.getLeftPosition() < ret) {
-                ret = cell.getLeftPosition();
-            }
-        }
-
-        return ret;
-    }
-
-    public final void moveDown(int amount) {
-        for (Shape shape : this.cells) {
-            shape.setCenterY(shape.getCenterY() + amount);
+    public final void moveDown() {
+        for (Shape shape : this.points) {
+            shape.setCenterY(shape.getCenterY() + 1);
         }
         this.topRow += 1;
     }
 
-    public final void moveLeft(int amount) {
-        for (Shape shape : this.cells) {
-            shape.setCenterX(shape.getCenterX() - amount);
+    public final void moveLeft() {
+        for (Shape shape : this.points) {
+            shape.setCenterX(shape.getCenterX() - 1);
         }
         this.leftRow -= 1;
     }
 
-    public final void moveRight(int amount) {
-        for (Shape shape : this.cells) {
-            shape.setCenterX(shape.getCenterX() + amount);
+    public final void moveRight() {
+        for (Shape shape : this.points) {
+            shape.setCenterX(shape.getCenterX() + 1);
         }
         this.leftRow += 1;
     }
@@ -169,15 +107,60 @@ public abstract class BasicBlock extends Polygon {
     public final Color getColor() {
         return this.color;
     }
+    
+    public final void removePoint(Point point){
+        
+    }
 
     /**
-     * Gets an iterator with all the cells forming the block
+     * Gets an iterator with all the points forming the block
      *
      * @return the iterator of Cell
      */
-    public final ArrayList<Cell> getCells() {
+    public final ArrayList<Point> getPoints() {
 
-        return this.cells;
+        return this.points;
     }
 
+    public final float getLowestPoint() {
+
+        float ret = 0;
+
+        for (Point point : this.points) {
+            if (point.getCenterY() > ret) {
+                ret = point.getCenterY();
+            }
+        }
+
+        return ret;
+
+    }
+
+    public final float getRightmostPoint() {
+
+        float ret = 0;
+
+        for (Point point : this.points) {
+            if (point.getCenterX() > ret) {
+                ret = point.getCenterX();
+            }
+        }
+
+        return ret;
+
+    }
+
+    public final float getLeftmostPoint() {
+
+        float ret = 9999;
+
+        for (Point point : this.points) {
+            if (point.getCenterX() < ret) {
+                ret = point.getCenterX();
+            }
+        }
+
+        return ret;
+
+    }
 }

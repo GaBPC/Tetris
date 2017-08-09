@@ -5,51 +5,46 @@
  */
 package Blocks;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.geom.Rectangle;
 
 /**
  *
  * @author gabriel
  */
-public class Cell extends Rectangle {
+public class Cell {
 
-    private float width, height;
+    private int x, y;
+    private Color color;
 
-    public Cell(float x, float y, float width, float height) {
-        super(x, y, width, height);
-        this.width = width;
-        this.height = height;
+    public Cell(int x, int y, Color color) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
     }
 
-
-    /**
-     * Function that calculates the position of the pixel that is down the
-     * screen.
-     *
-     * @return the postion of that pixel
-     */
-    public final float getBottomPosition() {
-        return this.getCenterY() + this.height / 2;
+    public int getX() {
+        return x;
     }
 
-    /**
-     * Function that calculates the position of the pixel to the right of the
-     * screen.
-     *
-     * @return the postion of that pixel
-     */
-    public final float getRightPosition() {
-        return this.getCenterX() + this.width / 2;
+    public int getY() {
+        return y;
     }
 
-    /**
-     * Function that calculates the position of the pixel to the left of the
-     * screen.
-     * 
-     * @return the postion of that pixel
-     */
-    public final float getLeftPosition() {
-        return this.getCenterX() - this.width / 2;
+    public Color getColor() {
+        return color;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
     }
 
 }

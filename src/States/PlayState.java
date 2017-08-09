@@ -8,12 +8,15 @@ package States;
 import Blocks.BasicBlock;
 import Blocks.Cell;
 import Boards.BasicBoard;
+import java.util.ArrayList;
 import java.util.Iterator;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Point;
+import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
@@ -53,21 +56,38 @@ public class PlayState extends BasicGameState {
         g.setColor(Color.white);
         g.drawString("Playing " + Integer.toString(this.timer), 0, 0);
 
-        Iterator<BasicBlock> it = this.board.getBlocks();
-        while (it.hasNext()) {
-            BasicBlock aux = it.next();
+        BasicBlock current = this.board.getCurrentBlock();
 
-            g.setColor(aux.getColor());
+        g.setColor(current.getColor());
 
-            Iterator<Cell> cells = aux.getCells().iterator();
-            while (cells.hasNext()) {
-                g.setColor(aux.getColor());
-                Cell cell = cells.next();
-                g.fill(cell);
-                g.setColor(Color.white);
-                g.draw(cell);
+        Iterator<Point> points = current.getPoints().iterator();
+
+        while (points.hasNext()) {
+            Point point = points.next();
+
+            g.setColor(current.getColor());
+            Shape shape = new Rectangle(point.getCenterX() * this.board.getCellWidth(), point.getCenterY() * this.board.getCellHeigth(), this.board.getCellWidth(), this.board.getCellHeigth());
+            g.fill(shape);
+
+            g.setColor(Color.white);
+            g.draw(shape);
+        }
+
+        ArrayList<Cell[]> cells = this.board.getCells();
+
+        for (Cell[] row : cells) {
+            for (int i = 0; i < row.length; i++) {
+
+                if (row[i] != null) {
+                    g.setColor(row[i].getColor());
+                    Shape shape = new Rectangle(row[i].getY() * this.board.getCellWidth(), row[i].getX() * this.board.getCellHeigth(), this.board.getCellWidth(), this.board.getCellHeigth());
+                    g.fill(shape);
+
+                    g.setColor(Color.white);
+                    g.draw(shape);
+                }
+
             }
-
         }
 
     }
@@ -99,6 +119,10 @@ public class PlayState extends BasicGameState {
 
             if (input.isKeyDown(Input.KEY_A) || input.isKeyDown(Input.KEY_UP)) {
                 this.board.rotateCurrentBlock();
+            }
+
+            if (input.isKeyDown(Input.KEY_C)) {
+                this.board.saveBlock();
             }
 
             // this.board.moveCurrentBlockDown();

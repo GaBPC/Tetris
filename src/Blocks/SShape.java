@@ -16,7 +16,7 @@ public class SShape extends BasicBlock {
     private static final boolean[][] model = new boolean[][]{{true, false, false, false}, {true, true, false, false}, {false, true, false, false}, {false, false, false, false}};
 
     public SShape(int cell_width, int cell_heigth) {
-        super(SShape.model, Color.green, 5 * cell_width, 100, cell_width, cell_heigth);
+        super(SShape.model, Color.green);
 
     }
 
