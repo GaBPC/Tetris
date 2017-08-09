@@ -128,6 +128,10 @@ public class PlayState extends BasicGameState {
             // this.board.moveCurrentBlockDown();
             this.next_block_movement = this.tick;
 
+            if (this.board.checkGameOver()) {
+                sbg.enterState(Tetris.GAME_OVER_STATE_ID);
+            }
+
         }
 
     }

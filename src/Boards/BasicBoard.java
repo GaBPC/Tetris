@@ -205,14 +205,13 @@ public class BasicBoard {
         }
 
     }
-    
-    public void saveBlock(){
+
+    public void saveBlock() {
         BasicBlock aux = this.savedBlock;
         this.savedBlock = this.currentBlock;
-        if(aux == null){
+        if (aux == null) {
             this.insertNewBlock();
-        }
-        else{
+        } else {
             this.currentBlock = aux;
             this.currentBlock.resetBlock();
         }
@@ -232,6 +231,22 @@ public class BasicBoard {
             row[x] = new Cell(y, x, this.currentBlock.getColor());
         }
 
+    }
+
+    /**
+     * Checks if the game is over. A game is over when the first row of the
+     * board is not empty
+     *
+     * @return true if the game is over, false otherwise
+     */
+    public boolean checkGameOver() {
+        Cell[] row = this.board.get(0);
+        for (Cell cell : row) {
+            if (cell != null) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
