@@ -1,7 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2017 gabriel
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package tetris;
 
@@ -25,19 +36,18 @@ public class Controller {
         this.gameBoard = gameBoard;
         this.currentBlock = this.createNewBlock();
     }
-    
-    public final BasicBlock createNewBlock(){
+
+    public final BasicBlock createNewBlock() {
         return BlocksFactory.createRandomBlock();
     }
 
-    
     public BasicBlock getCurrentBlock() {
         return this.currentBlock;
     }
 
     public void moveCurrentBlockRigth() {
 
-        float x = this.currentBlock.getRightmostPoint();
+        float x = this.currentBlock.getRightmostCell();
 
         if (x < this.gameBoard.getColumnCount() - 1 && this.gameBoard.checkRigthMovement(this.currentBlock)) {
             this.currentBlock.moveRight();
@@ -47,7 +57,7 @@ public class Controller {
 
     public void moveCurrentBlockLeft() {
 
-        float x = this.currentBlock.getLeftmostPoint();
+        float x = this.currentBlock.getLeftmostCell();
 
         if (x > 0 && this.gameBoard.checkLeftMovement(this.currentBlock)) {
             this.currentBlock.moveLeft();
@@ -57,7 +67,7 @@ public class Controller {
 
     public boolean moveCurrentBlockDown() {
 
-        float y = this.currentBlock.getLowestPoint();
+        float y = this.currentBlock.getLowestCell();
 
         if (y < this.gameBoard.getRowCount() - 1 && this.gameBoard.checkBottomMovement(this.currentBlock)) {
             this.currentBlock.moveDown();
@@ -79,14 +89,8 @@ public class Controller {
     }
 
     public void rotateCurrentBlock() {
-        int rigthX = (int) this.currentBlock.getRightmostPoint();
-        int leftX = (int) this.currentBlock.getLeftmostPoint();
-        int y = (int) this.currentBlock.getLowestPoint();
-
-        if (leftX > 0 && rigthX < this.gameBoard.getColumnCount() - 1 && y < this.gameBoard.getRowCount() - 1) {
-            if (this.gameBoard.checkRigthMovement(this.currentBlock) && this.gameBoard.checkLeftMovement(this.currentBlock)) {
-                this.currentBlock.rotate();
-            }
+        if (this.gameBoard.checkRotation(this.currentBlock)) {
+            this.currentBlock.rotate();
         }
     }
 
@@ -97,22 +101,24 @@ public class Controller {
             this.currentBlock = this.createNewBlock();
         } else {
             this.currentBlock = aux;
-            this.currentBlock.resetBlock();
+            this.currentBlock.resetToSpawn();
         }
     }
-    
-    public int getBoardRowCount(){
+
+    public int getBoardRowCount() {
         return this.gameBoard.getRowCount();
     }
-    
-    public int getBoardColumnCount(){
+
+    public int getBoardColumnCount() {
         return this.gameBoard.getColumnCount();
     }
-    
-    public Iterator<Cell> getCells(){
+
+    public Iterator<Cell> getCells() {
         return this.gameBoard.getCells();
     }
-    
-    
+
+    public int getLinesCount() {
+        return this.gameBoard.getLinesCount();
+    }
 
 }

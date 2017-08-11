@@ -1,7 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2017 gabriel
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package States;
 
@@ -21,7 +32,7 @@ public class MenuState extends BasicGameState {
 
     @Override
     public int getID() {
-        return Tetris.MENU_STATE_ID;
+        return Tetris.statesID.MENU.ordinal();
     }
 
     @Override
@@ -31,14 +42,14 @@ public class MenuState extends BasicGameState {
 
     @Override
     public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-        g.drawString("Press [Enter] to Play", 0, 0);
+        g.drawString("1) Classic Mode", 0, 0);
     }
 
     @Override
     public void update(GameContainer gc, StateBasedGame sbg, int i) throws SlickException {
         Input input = gc.getInput();
-        if(input.isKeyDown(Input.KEY_ENTER)){
-            sbg.enterState(Tetris.PLAY_STATE_ID);
+        if(input.isKeyDown(Input.KEY_1)){
+            sbg.enterState(Tetris.statesID.PLAY.ordinal());
         }
     }
     

@@ -1,7 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2017 gabriel
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package Boards;
 
@@ -29,16 +40,20 @@ public abstract class BasicBoard {
      * Number of CAT's column.
      */
     private final int columnCount;
-
     /**
      * Cells Allocation Table.
      */
     CellsAllocationTable CAT = null;
+    /**
+     *
+     */
+    private int linesCount;
 
     public BasicBoard(int rowCount, int columnCount) {
         this.rowCount = rowCount;
         this.columnCount = columnCount;
         this.CAT = this.initializeBAT();
+        this.linesCount = 0;
     }
 
     /**
@@ -48,11 +63,15 @@ public abstract class BasicBoard {
         return this.rowCount;
     }
 
-        /**
+    /**
      * @return the number of columns of the board.
      */
     public int getColumnCount() {
         return this.columnCount;
+    }
+
+    public int getLinesCount() {
+        return this.linesCount;
     }
 
     /**
@@ -81,13 +100,13 @@ public abstract class BasicBoard {
      * @param block is the block you are trying to move.
      * @return true if the block can be moved, false otherwise.
      */
-    public boolean checkRigthMovement(BasicBlock block) {
+    public final boolean checkRigthMovement(BasicBlock block) {
         boolean check = true;
-        Iterator<Cell> points = block.getPoints().iterator();
+        Iterator<Cell> points = block.getCells().iterator();
         while (points.hasNext() && check) {
             Cell point = points.next();
-            int pointX = (int) point.getX();
-            int pointY = (int) point.getY();
+            int pointX = (int) point.getRow();
+            int pointY = (int) point.getColumn();
 
             Cell cell = this.CAT.getCell(pointY, pointX + 1);
 
@@ -106,13 +125,13 @@ public abstract class BasicBoard {
      * @param block is the block you are trying to move.
      * @return true if the block can be moved, false otherwise.
      */
-    public boolean checkLeftMovement(BasicBlock block) {
+    public final boolean checkLeftMovement(BasicBlock block) {
         boolean check = true;
-        Iterator<Cell> points = block.getPoints().iterator();
+        Iterator<Cell> points = block.getCells().iterator();
         while (points.hasNext() && check) {
             Cell point = points.next();
-            int pointX = (int) point.getX();
-            int pointY = (int) point.getY();
+            int pointX = (int) point.getRow();
+            int pointY = (int) point.getColumn();
 
             Cell cell = this.CAT.getCell(pointY, pointX - 1);
 
@@ -131,13 +150,13 @@ public abstract class BasicBoard {
      * @param block is the block you are trying to move.
      * @return true if the block can be moved, false otherwise.
      */
-    public boolean checkBottomMovement(BasicBlock block) {
+    public final boolean checkBottomMovement(BasicBlock block) {
         boolean check = true;
-        Iterator<Cell> points = block.getPoints().iterator();
+        Iterator<Cell> points = block.getCells().iterator();
         while (points.hasNext() && check) {
             Cell point = points.next();
-            int pointX = (int) point.getX();
-            int pointY = (int) point.getY();
+            int pointX = (int) point.getRow();
+            int pointY = (int) point.getColumn();
 
             Cell cell = this.CAT.getCell(pointY + 1, pointX);
 
@@ -149,22 +168,55 @@ public abstract class BasicBoard {
     }
 
     /**
+     * A function that validates if the block can rotate on the board.
+     *
+     * @param block
+     * @return true if the block can be rotated, false otherwise.
+     */
+    public final boolean checkRotation(BasicBlock block) {
+        Iterator<Cell> cells = block.cellsNeededToRotate();
+
+        boolean check = true;
+
+        while (cells.hasNext() && check) {
+            Cell cell = cells.next();
+
+            int row = cell.getRow();
+            int col = cell.getColumn();
+
+            if (row < 0 || row >= this.rowCount || col < 0 || col >= this.columnCount || !this.CAT.isEmpty(row, col)) {
+                check = false;
+            }
+
+        }
+
+        // TODO
+        return check;
+    }
+
+    /**
      * A function that registers the cells of a block on the game board. A block
      * must be registered when it is not wanted that the user can continue to
      * control it.
      *
      * @param block
      */
-    public void registerBlock(BasicBlock block) {
-        Iterator<Cell> points = block.getPoints().iterator();
+    public final void registerBlock(BasicBlock block) {
+        Iterator<Cell> points = block.getCells().iterator();
 
         while (points.hasNext()) {
             Cell point = points.next();
 
-            int x = (int) point.getX();
-            int y = (int) point.getY();
+            int x = (int) point.getRow();
+            int y = (int) point.getColumn();
 
             this.CAT.setCell(y, x, block.getColor());
+        }
+
+        this.linesCount += this.CAT.deleteLines();
+
+        if (this.isGameOver()) {
+            //TODO
         }
 
     }

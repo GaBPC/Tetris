@@ -1,15 +1,24 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2017 gabriel
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package States;
 
 import Blocks.BasicBlock;
 import Blocks.Cell;
-import Boards.BasicBoard;
 import Boards.StandarTetrisBoard;
-import java.util.ArrayList;
 import java.util.Iterator;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -39,7 +48,7 @@ public class PlayState extends BasicGameState {
 
     @Override
     public int getID() {
-        return Tetris.PLAY_STATE_ID;
+        return Tetris.statesID.PLAY.ordinal();
     }
 
     @Override
@@ -58,20 +67,30 @@ public class PlayState extends BasicGameState {
     @Override
     public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 
+        for (int i = 0; i < this.gameController.getBoardRowCount(); i++) {
+            for (int j = 0; j < this.gameController.getBoardColumnCount(); j++) {
+                Shape shape = new Rectangle(j * this.cellWidth, i * this.cellHeigth, this.cellWidth, this.cellHeigth);
+                g.setColor(Color.lightGray);
+                g.draw(shape);
+                g.setColor(Color.white);
+                g.drawString(i + " " + j, j * this.cellWidth, i * this.cellHeigth);
+            }
+        }
+
         g.setColor(Color.white);
-        g.drawString("Playing " + Integer.toString(this.timer), 0, 0);
+        // g.drawString("Lines: " + this.gameController.getLinesCount(), 0, 0);
 
         BasicBlock current = this.gameController.getCurrentBlock();
 
         g.setColor(current.getColor());
 
-        Iterator<Cell> points = current.getPoints().iterator();
+        Iterator<Cell> points = current.getCells().iterator();
 
         while (points.hasNext()) {
             Cell point = points.next();
 
             g.setColor(point.getColor());
-            Shape shape = new Rectangle(point.getX() * this.cellWidth, point.getY() * this.cellHeigth, this.cellWidth, this.cellHeigth);
+            Shape shape = new Rectangle(point.getRow() * this.cellWidth, point.getColumn() * this.cellHeigth, this.cellWidth, this.cellHeigth);
             g.fill(shape);
 
             g.setColor(Color.white);
@@ -82,14 +101,13 @@ public class PlayState extends BasicGameState {
 
         while (cells.hasNext()) {
             Cell cell = cells.next();
-            
+
             g.setColor(cell.getColor());
-            Shape shape = new Rectangle(cell.getY() * this.cellWidth, cell.getX() * this.cellHeigth, this.cellWidth, this.cellHeigth);
+            Shape shape = new Rectangle(cell.getColumn() * this.cellWidth, cell.getRow() * this.cellHeigth, this.cellWidth, this.cellHeigth);
             g.fill(shape);
             g.setColor(Color.white);
             g.draw(shape);
         }
-
 
     }
 

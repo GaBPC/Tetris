@@ -1,7 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2017 gabriel
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package tetris;
 
@@ -18,11 +29,11 @@ import org.newdawn.slick.state.StateBasedGame;
  * @author gabriel
  */
 public class Tetris extends StateBasedGame {
-
-    public static final int MENU_STATE_ID = 0;
-    public static final int PLAY_STATE_ID = 1;
-    public static final int GAME_OVER_STATE_ID = 2;
-
+    
+    public static enum statesID{
+        MENU, PLAY, GAME_OVER
+    }
+            
     public Tetris(String name) {
         super(name);
     }
@@ -38,9 +49,9 @@ public class Tetris extends StateBasedGame {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws SlickException {
-        AppGameContainer app = new AppGameContainer(new Tetris("Testing"));
+        AppGameContainer app = new AppGameContainer(new Tetris("Tetris"));
         // Sets the game's screen size and if it's full size
-        app.setDisplayMode(440, 704, false);
+        app.setDisplayMode(400, 800, false);
         // Shows (or not) the FPS
         app.setShowFPS(false);
         // Syncs the FPS
