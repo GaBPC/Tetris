@@ -6,247 +6,176 @@
 package Boards;
 
 import Blocks.BasicBlock;
-import Blocks.BlocksFactory;
 import Blocks.Cell;
-import java.util.ArrayList;
+import Blocks.CellsAllocationTable;
 import java.util.Iterator;
-import org.newdawn.slick.geom.Point;
-import org.newdawn.slick.geom.Rectangle;
-import org.newdawn.slick.geom.Shape;
 
 /**
+ * Class that represents the board where the different blocks move. Can be
+ * thinked as a matrix of NxM. Each cell in the array can contain 0 or 1
+ * instances of Cell.
+ *
+ *
  *
  * @author gabriel
  */
-public class BasicBoard {
+public abstract class BasicBoard {
 
-    public static final int ROW_COUNT = 16;
-    public static final int COLUM_COUNT = 10;
+    /**
+     * Number of CAT's row.
+     */
+    private final int rowCount;
+    /**
+     * Number of CAT's column.
+     */
+    private final int columnCount;
 
-    private int board_width, board_heigth;
+    /**
+     * Cells Allocation Table.
+     */
+    CellsAllocationTable CAT = null;
 
-    private int cellWidth, cellHeigth;
-
-    private BasicBlock currentBlock = null;
-    private BasicBlock savedBlock = null;
-    private ArrayList<BasicBlock> blocks = null;
-
-    private ArrayList<Cell[]> board = null;
-
-    public BasicBoard(int board_width, int board_heigth) {
-        this.board_width = board_width;
-        this.board_heigth = board_heigth;
-        this.calculateCellSize();
-        this.board = new ArrayList<Cell[]>();
-
-        for (int i = 0; i < BasicBoard.ROW_COUNT; i++) {
-            Cell[] aux = new Cell[BasicBoard.COLUM_COUNT];
-            for (int j = 0; j < BasicBoard.COLUM_COUNT; j++) {
-                aux[j] = null;
-            }
-            this.board.add(aux);
-        }
-
-        this.blocks = new ArrayList<>();
-    }
-
-    public int getCellWidth() {
-        return cellWidth;
-    }
-
-    public int getCellHeigth() {
-        return cellHeigth;
+    public BasicBoard(int rowCount, int columnCount) {
+        this.rowCount = rowCount;
+        this.columnCount = columnCount;
+        this.CAT = this.initializeBAT();
     }
 
     /**
-     * Function that calculates the size (in pixels) of each cell of the board,
-     * based on the width and height (of the board itself)
-     *
+     * @return the number of rows of the board.
      */
-    private void calculateCellSize() {
-        this.cellWidth = this.board_width / BasicBoard.COLUM_COUNT;
-        this.cellHeigth = this.board_heigth / BasicBoard.ROW_COUNT;
+    public int getRowCount() {
+        return this.rowCount;
+    }
+
+        /**
+     * @return the number of columns of the board.
+     */
+    public int getColumnCount() {
+        return this.columnCount;
     }
 
     /**
+     * Function that initializes the CAT. It should be implemented on every
+     * board, based on how you want that board to begin.
      *
-     * Function that adds a new block to the game. This block will be the one
-     * that will become the current block that the player can control.
-     *
+     * @return a CAT initialized.
      */
-    public void insertNewBlock() {
+    protected abstract CellsAllocationTable initializeBAT();
 
-        this.currentBlock = BlocksFactory.createRandomBlock(this.cellWidth, this.cellHeigth);
-        this.blocks.add(this.currentBlock);
+    /**
+     * Function that returns an ArrayList with all the OCCUPIED cells on the
+     * board. Each cell has its position and its color.
+     *
+     * @return an ArrayList of Cell
+     */
+    public Iterator<Cell> getCells() {
+        return this.CAT.getCells();
     }
 
     /**
-     * Function that returns all the currents blocks on the game in a iterator.
+     * Function that checks if a given block can move one position to the right
+     * on the board. It does this based on the current position of the block and
+     * the current state of the board cells.
      *
-     * @return an Iterator of BasicBlock
+     * @param block is the block you are trying to move.
+     * @return true if the block can be moved, false otherwise.
      */
-    public BasicBlock getCurrentBlock() {
-        return this.currentBlock;
-    }
-
-    public ArrayList<Cell[]> getCells() {
-        return this.board;
-    }
-
-    private boolean checkRigthMovement(BasicBlock block) {
+    public boolean checkRigthMovement(BasicBlock block) {
         boolean check = true;
-        Iterator<Point> points = block.getPoints().iterator();
+        Iterator<Cell> points = block.getPoints().iterator();
         while (points.hasNext() && check) {
-            Point point = points.next();
-            int pointX = (int) point.getCenterX();
-            int pointY = (int) point.getCenterY();
+            Cell point = points.next();
+            int pointX = (int) point.getX();
+            int pointY = (int) point.getY();
 
-            Cell[] row = this.board.get(pointY);
+            Cell cell = this.CAT.getCell(pointY, pointX + 1);
 
-            Boolean cellVal = row[pointX + 1] != null ? true : false;
-
-            if (cellVal == true) {
+            if (cell != null) {
                 check = false;
             }
         }
         return check;
     }
 
-    private boolean checkLeftMovement(BasicBlock block) {
+    /**
+     * Function that checks if a given block can move one position to the left
+     * on the board. It does this based on the current position of the block and
+     * the current state of the board cells.
+     *
+     * @param block is the block you are trying to move.
+     * @return true if the block can be moved, false otherwise.
+     */
+    public boolean checkLeftMovement(BasicBlock block) {
         boolean check = true;
-        Iterator<Point> points = block.getPoints().iterator();
+        Iterator<Cell> points = block.getPoints().iterator();
         while (points.hasNext() && check) {
-            Point point = points.next();
-            int pointX = (int) point.getCenterX();
-            int pointY = (int) point.getCenterY();
+            Cell point = points.next();
+            int pointX = (int) point.getX();
+            int pointY = (int) point.getY();
 
-            Cell[] row = this.board.get(pointY);
+            Cell cell = this.CAT.getCell(pointY, pointX - 1);
 
-            Boolean cellVal = row[pointX - 1] != null ? true : false;
-
-            if (cellVal == true) {
+            if (cell != null) {
                 check = false;
             }
         }
         return check;
     }
 
-    private boolean checkBottomMovement(BasicBlock block) {
+    /**
+     * Function that checks if a given block can move one position to the bottom
+     * on the board. It does this based on the current position of the block and
+     * the current state of the board cells.
+     *
+     * @param block is the block you are trying to move.
+     * @return true if the block can be moved, false otherwise.
+     */
+    public boolean checkBottomMovement(BasicBlock block) {
         boolean check = true;
-        Iterator<Point> points = block.getPoints().iterator();
+        Iterator<Cell> points = block.getPoints().iterator();
         while (points.hasNext() && check) {
-            Point point = points.next();
-            int pointX = (int) point.getCenterX();
-            int pointY = (int) point.getCenterY();
+            Cell point = points.next();
+            int pointX = (int) point.getX();
+            int pointY = (int) point.getY();
 
-            Cell[] row = this.board.get(pointY + 1);
+            Cell cell = this.CAT.getCell(pointY + 1, pointX);
 
-            Boolean cellVal = row[pointX] != null ? true : false;
-
-            if (cellVal == true) {
+            if (cell != null) {
                 check = false;
             }
         }
         return check;
     }
 
-    public void moveCurrentBlockRigth() {
-
-        float x = this.currentBlock.getRightmostPoint();
-
-        if (x < BasicBoard.COLUM_COUNT - 1 && this.checkRigthMovement(this.currentBlock)) {
-            this.currentBlock.moveRight();
-        }
-
-    }
-
-    public void moveCurrentBlockLeft() {
-
-        float x = this.currentBlock.getLeftmostPoint();
-
-        if (x > 0 && this.checkLeftMovement(this.currentBlock)) {
-            this.currentBlock.moveLeft();
-        }
-
-    }
-
-    public boolean moveCurrentBlockDown() {
-
-        float y = this.currentBlock.getLowestPoint();
-
-        if (y < BasicBoard.ROW_COUNT - 1 && this.checkBottomMovement(this.currentBlock)) {
-            this.currentBlock.moveDown();
-            return true;
-        } else {
-            this.registerBlock(this.currentBlock);
-            this.insertNewBlock();
-            return false;
-        }
-    }
-
-    public void dropCurrentBlock() {
-
-        boolean check = this.moveCurrentBlockDown();
-        while (check) {
-            check = this.moveCurrentBlockDown();
-        }
-
-    }
-
-    public void rotateCurrentBlock() {
-        int rigthX = (int) this.currentBlock.getRightmostPoint();
-        int leftX = (int) this.currentBlock.getLeftmostPoint();
-        int y = (int) this.currentBlock.getLowestPoint();
-
-        if (leftX > 0 && rigthX < BasicBoard.COLUM_COUNT - 1 && y < BasicBoard.ROW_COUNT - 1) {
-            if (this.checkRigthMovement(this.currentBlock) && this.checkLeftMovement(this.currentBlock)) {
-                this.currentBlock.rotate();
-            }
-        }
-
-    }
-
-    public void saveBlock() {
-        BasicBlock aux = this.savedBlock;
-        this.savedBlock = this.currentBlock;
-        if (aux == null) {
-            this.insertNewBlock();
-        } else {
-            this.currentBlock = aux;
-            this.currentBlock.resetBlock();
-        }
-    }
-
+    /**
+     * A function that registers the cells of a block on the game board. A block
+     * must be registered when it is not wanted that the user can continue to
+     * control it.
+     *
+     * @param block
+     */
     public void registerBlock(BasicBlock block) {
-        Iterator<Point> points = block.getPoints().iterator();
+        Iterator<Cell> points = block.getPoints().iterator();
 
         while (points.hasNext()) {
-            Point point = points.next();
+            Cell point = points.next();
 
-            int x = (int) point.getCenterX();
-            int y = (int) point.getCenterY();
+            int x = (int) point.getX();
+            int y = (int) point.getY();
 
-            Cell[] row = this.board.get(y);
-
-            row[x] = new Cell(y, x, this.currentBlock.getColor());
+            this.CAT.setCell(y, x, block.getColor());
         }
 
     }
 
     /**
-     * Checks if the game is over. A game is over when the first row of the
-     * board is not empty
+     * Verify, based on the status of the board, if the game is finished. This
+     * function must be defined in each game mode (boards), based on the mode
+     * rules.
      *
-     * @return true if the game is over, false otherwise
+     * @return true if the game is over, false otherwise.
      */
-    public boolean checkGameOver() {
-        Cell[] row = this.board.get(0);
-        for (Cell cell : row) {
-            if (cell != null) {
-                return true;
-            }
-        }
-        return false;
-    }
+    public abstract boolean isGameOver();
 
 }

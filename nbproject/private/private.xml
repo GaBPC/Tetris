@@ -5,6 +5,7 @@
         <group>
             <file>file:/home/gabriel/NetBeansProjects/Tetris/src/Boards/BasicBoard.java</file>
             <file>file:/home/gabriel/NetBeansProjects/Tetris/src/States/PlayState.java</file>
+            <file>file:/home/gabriel/NetBeansProjects/Tetris/src/Blocks/BasicBlock.java</file>
             <file>file:/home/gabriel/NetBeansProjects/Tetris/src/States/GameOverState.java</file>
         </group>
     </open-files>

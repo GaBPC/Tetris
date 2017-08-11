@@ -13,32 +13,32 @@ import java.util.Random;
  */
 public abstract class BlocksFactory {
 
-    public static BasicBlock createRandomBlock(int cellWidth, int cellHeigth) {
+    public static BasicBlock createRandomBlock() {
         int type = new Random().nextInt(7);
-
+        
         BasicBlock ret = null;
 
         switch (type) {
             case 0:
-                ret = new Line(cellWidth, cellHeigth);
+                ret = new Line();
                 break;
             case 1:
-                ret = new Square(cellWidth, cellHeigth);
+                ret = new Square();
                 break;
             case 2:
-                ret = new Tee(cellWidth, cellHeigth);
+                ret = new Tee();
                 break;
             case 3:
-                ret = new LShape(cellWidth, cellHeigth);
+                ret = new LShape();
                 break;
             case 4:
-                ret = new JShape(cellWidth, cellHeigth);
+                ret = new JShape();
                 break;
             case 5:
-                ret = new ZShape(cellWidth, cellHeigth);
+                ret = new ZShape();
                 break;
             case 6:
-                ret = new SShape(cellWidth, cellHeigth);
+                ret = new SShape();
                 break;
 
         }

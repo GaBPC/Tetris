@@ -15,7 +15,7 @@ public class LShape extends BasicBlock {
 
     private static final boolean[][] model = new boolean[][]{{true, true, false, false}, {false, true, false, false}, {false, true, false, false}, {false, false, false, false}};
 
-    public LShape(int cell_width, int cell_heigth) {
+    public LShape() {
         super(LShape.model, Color.orange);
 
     }

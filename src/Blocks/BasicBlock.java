@@ -6,11 +6,7 @@
 package Blocks;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import org.newdawn.slick.Color;
-import org.newdawn.slick.geom.Point;
-import org.newdawn.slick.geom.Polygon;
-import org.newdawn.slick.geom.Shape;
 
 /**
  *
@@ -18,12 +14,34 @@ import org.newdawn.slick.geom.Shape;
  */
 public abstract class BasicBlock {
 
+    /**
+     * It's the color with which the block has to been painted.
+     */
     private Color color = null;
-    private ArrayList<Point> points = null;
+    /**
+     * It's a collection of Point.
+     */
+    private ArrayList<Cell> points = null;
+    /**
+     * It's the block's model. Represents how the different cells that compose
+     * it are distributed.
+     */
     private boolean[][] model = null;
+    /**
+     * 
+     */
     private int topRow = 0;
+    /**
+     * 
+     */
     private int leftRow = 0;
 
+    /**
+     * 
+     * 
+     * @param model
+     * @param color 
+     */
     public BasicBlock(boolean[][] model, Color color) {
 
         this.model = model;
@@ -39,25 +57,31 @@ public abstract class BasicBlock {
         for (int i = 0; i < model.length; i++) {
             for (int j = 0; j < model[i].length; j++) {
                 if (model[i][j] == true) {
-                    this.points.add(new Point(j + this.leftRow, i + this.topRow));
+                    this.points.add(new Cell(j + this.leftRow, i + this.topRow, this.getColor()));
                 }
             }
         }
     }
-    
-    public void resetBlock(){
+
+    public void resetBlock() {
         this.leftRow = 0;
         this.topRow = 0;
         this.generatePoints();
     }
 
     /**
-     * Function that rotates the block.
+     * Function that calculates the position of the block once it has rotated.
+     * Uses a block model and rotates it 90º.Returns a rotated model. It is
+     * useful to know if the rotation can be performed or will cause a collision
+     * with other blocks.
      *
+     * @param model the model to rotate. It won't be modified.
+     * @return a new model rotated.
      */
-    public final void rotate() {
-        // Transposes the matrix
+    public boolean[][] calculateRotation(boolean[][] model) {
         boolean[][] modelTemp = new boolean[this.model[0].length][this.model.length];
+
+        // Transposes the model
         for (int i = 0; i < this.model.length; i++) {
             for (int j = 0; j < this.model[i].length; j++) {
                 modelTemp[j][i] = this.model[i][j];
@@ -73,29 +97,39 @@ public abstract class BasicBlock {
             }
         }
 
-        this.model = modelTemp;
+        return modelTemp;
+
+    }
+
+    /**
+     * Function that rotates the block.
+     *
+     */
+    public final void rotate() {
+
+        this.model = this.calculateRotation(this.model);
 
         this.generatePoints();
     }
 
     public final void moveDown() {
-        for (Shape shape : this.points) {
-            shape.setCenterY(shape.getCenterY() + 1);
-        }
+        this.points.stream().forEach((shape) -> {
+            shape.setY(shape.getY() + 1);
+        });
         this.topRow += 1;
     }
 
     public final void moveLeft() {
-        for (Shape shape : this.points) {
-            shape.setCenterX(shape.getCenterX() - 1);
-        }
+        this.points.stream().forEach((shape) -> {
+            shape.setX(shape.getX() - 1);
+        });
         this.leftRow -= 1;
     }
 
     public final void moveRight() {
-        for (Shape shape : this.points) {
-            shape.setCenterX(shape.getCenterX() + 1);
-        }
+        this.points.stream().forEach((shape) -> {
+            shape.setX(shape.getX() + 1);
+        });
         this.leftRow += 1;
     }
 
@@ -107,17 +141,13 @@ public abstract class BasicBlock {
     public final Color getColor() {
         return this.color;
     }
-    
-    public final void removePoint(Point point){
-        
-    }
 
     /**
      * Gets an iterator with all the points forming the block
      *
      * @return the iterator of Cell
      */
-    public final ArrayList<Point> getPoints() {
+    public final ArrayList<Cell> getPoints() {
 
         return this.points;
     }
@@ -126,9 +156,9 @@ public abstract class BasicBlock {
 
         float ret = 0;
 
-        for (Point point : this.points) {
-            if (point.getCenterY() > ret) {
-                ret = point.getCenterY();
+        for (Cell point : this.points) {
+            if (point.getY() > ret) {
+                ret = point.getY();
             }
         }
 
@@ -140,9 +170,9 @@ public abstract class BasicBlock {
 
         float ret = 0;
 
-        for (Point point : this.points) {
-            if (point.getCenterX() > ret) {
-                ret = point.getCenterX();
+        for (Cell point : this.points) {
+            if (point.getX() > ret) {
+                ret = point.getX();
             }
         }
 
@@ -154,9 +184,9 @@ public abstract class BasicBlock {
 
         float ret = 9999;
 
-        for (Point point : this.points) {
-            if (point.getCenterX() < ret) {
-                ret = point.getCenterX();
+        for (Cell point : this.points) {
+            if (point.getX() < ret) {
+                ret = point.getX();
             }
         }
 

@@ -6,7 +6,6 @@
 package Blocks;
 
 import org.newdawn.slick.Color;
-import org.newdawn.slick.geom.Rectangle;
 
 /**
  *

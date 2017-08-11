@@ -15,7 +15,7 @@ public class Line extends BasicBlock {
 
     private static final boolean[][] model = new boolean[][]{{false, true, false, false}, {false, true, false, false}, {false, true, false, false}, {false, true, false, false}};
 
-    public Line(int cell_width, int cell_heigth) {
+    public Line() {
         super(Line.model, Color.cyan);
 
     }

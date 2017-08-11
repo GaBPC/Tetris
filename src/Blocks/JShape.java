@@ -15,7 +15,7 @@ public class JShape extends BasicBlock {
 
     private static final boolean[][] model = new boolean[][]{{false, true, true, false}, {false, true, false, false}, {false, true, false, false}, {false, false, false, false}};
 
-    public JShape(int cell_width, int cell_heigth) {
+    public JShape() {
         super(JShape.model, Color.blue);
 
     }

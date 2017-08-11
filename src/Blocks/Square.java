@@ -15,7 +15,7 @@ public class Square extends BasicBlock {
 
     private static final boolean[][] model = new boolean[][]{{false, false, false, false}, {false, true, true, false}, {false, true, true, false}, {false, false, false, false}};
 
-    public Square(int cell_width, int cell_heigth) {
+    public Square() {
         super(Square.model, Color.yellow);
 
     }
