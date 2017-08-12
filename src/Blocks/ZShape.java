@@ -26,10 +26,10 @@ import org.newdawn.slick.Color;
  */
 public class ZShape extends BasicBlock {
 
-    private static final boolean[][] model = new boolean[][]{{false, true, false, false}, {true, true, false, false}, {true, false, false, false}, {false, false, false, false}};
+    private static final boolean[][] MODEL = new boolean[][]{{false, true, false}, {true, true, false}, {true, false, false}};
 
     public ZShape() {
-        super(ZShape.model, Color.red);
+        super(ZShape.MODEL, Color.red);
 
     }
 
@@ -38,35 +38,41 @@ public class ZShape extends BasicBlock {
 
         ArrayList<Cell> cells = new ArrayList<>();
 
-        Cell cell1 = null, cell2 = null, cell3 = null, cell4 = new Cell(1, 1);
+        Cell pivot = super.getPivotCell();
+        Cell cell1 = null;
+        Cell cell2 = null;
+        Cell cell3 = null;
+
+        int pivotCol = pivot.getColumn();
+        int pivotRow = pivot.getRow();
 
         switch (this.actualRotation) {
             case NORMAL:
-                cell1 = new Cell(2, 1);
-                cell2 = new Cell(2, 2);
-                cell3 = new Cell(0, 1);
+                cell1 = new Cell(pivotRow, pivotCol + 1);
+                cell2 = new Cell(pivotRow - 1, pivotCol);
+                cell3 = new Cell(pivotRow - 1, pivotCol - 1);
                 break;
             case RIGTH:
-                cell1 = new Cell(1, 0);
-                cell2 = new Cell(1, 2);
-                cell3 = new Cell(0, 2);
+                cell1 = new Cell(pivotRow, pivotCol + 1);
+                cell2 = new Cell(pivotRow + 1, pivotCol);
+                cell3 = new Cell(pivotRow + 1, pivotCol + 1);
                 break;
             case DOWN:
-                cell1 = new Cell(1, 0);
-                cell2 = new Cell(2, 0);
-                cell3 = new Cell(2, 2);
+                cell1 = new Cell(pivotRow, pivotCol - 1);
+                cell2 = new Cell(pivotRow + 1, pivotCol);
+                cell3 = new Cell(pivotRow + 1, pivotCol + 1);
                 break;
             case LEFT:
-                cell1 = new Cell(2, 0);
-                cell2 = new Cell(3, 0);
-                cell3 = new Cell(2, 2);
+                cell1 = new Cell(pivotRow - 1, pivotCol);
+                cell2 = new Cell(pivotRow, pivotCol - 1);
+                cell3 = new Cell(pivotRow + 1, pivotCol - 1);
                 break;
         }
 
+        cells.add(pivot);
         cells.add(cell1);
         cells.add(cell2);
         cells.add(cell3);
-        cells.add(cell4);
 
         return cells.iterator();
     }

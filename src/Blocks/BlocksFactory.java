@@ -16,7 +16,10 @@
  */
 package Blocks;
 
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  *
@@ -24,37 +27,63 @@ import java.util.Random;
  */
 public abstract class BlocksFactory {
 
-    public static BasicBlock createRandomBlock() {
-        int type = new Random().nextInt(7);
-        
-        BasicBlock ret = null;
+    static enum BlockType {
+        LINE, SQUARE, TEE, LSHAPE, JSHAPE, ZSHAPE, SSHAPE;
 
-        switch (type) {
-            case 0:
-                ret = new Line();
-                break;
-            case 1:
-                ret = new Square();
-                break;
-            case 2:
-                ret = new Tee();
-                break;
-            case 3:
-                ret = new LShape();
-                break;
-            case 4:
-                ret = new JShape();
-                break;
-            case 5:
-                ret = new ZShape();
-                break;
-            case 6:
-                ret = new SShape();
-                break;
+        private static BasicBlock newBlock(BlockType type) {
+            BasicBlock ret = null;
 
+            switch (type) {
+                case LINE:
+                    ret = new Line();
+                    break;
+                case SQUARE:
+                    ret = new Square();
+
+                    break;
+                case TEE:
+                    ret = new Tee();
+                    break;
+                case LSHAPE:
+                    ret = new LShape();
+                    break;
+                case JSHAPE:
+                    ret = new JShape();
+                    break;
+                case ZSHAPE:
+                    ret = new ZShape();
+                    break;
+                case SSHAPE:
+                    ret = new SShape();
+                    break;
+            }
+
+            return ret;
+        }
+    }
+
+    private static ArrayList<BlockType> blocksSecuence = new ArrayList<>();
+
+    static {
+        blocksSecuence.addAll(Arrays.asList(BlockType.values()));
+    }
+
+    private static LinkedList<BasicBlock> bag = new LinkedList<>();
+
+    private static void generateNewBag() {
+        Collections.shuffle(BlocksFactory.blocksSecuence);
+        BlocksFactory.blocksSecuence.forEach((type) -> {
+            BlocksFactory.bag.add(BlocksFactory.BlockType.newBlock(type));
+        });
+    }
+
+    public static BasicBlock getRandomBlock() {
+
+        if (BlocksFactory.bag.isEmpty()) {
+            BlocksFactory.generateNewBag();
         }
 
-        return new JShape();
+        return BlocksFactory.bag.poll();
     }
 
 }

@@ -26,8 +26,6 @@ import java.util.Iterator;
  * thinked as a matrix of NxM. Each cell in the array can contain 0 or 1
  * instances of Cell.
  *
- *
- *
  * @author gabriel
  */
 public abstract class BasicBoard {
@@ -105,10 +103,10 @@ public abstract class BasicBoard {
         Iterator<Cell> points = block.getCells().iterator();
         while (points.hasNext() && check) {
             Cell point = points.next();
-            int pointX = (int) point.getRow();
-            int pointY = (int) point.getColumn();
+            int row = (int) point.getRow();
+            int col = (int) point.getColumn();
 
-            Cell cell = this.CAT.getCell(pointY, pointX + 1);
+            Cell cell = this.CAT.getCell(row, col + 1);
 
             if (cell != null) {
                 check = false;
@@ -130,10 +128,10 @@ public abstract class BasicBoard {
         Iterator<Cell> points = block.getCells().iterator();
         while (points.hasNext() && check) {
             Cell point = points.next();
-            int pointX = (int) point.getRow();
-            int pointY = (int) point.getColumn();
+            int row = (int) point.getRow();
+            int col = (int) point.getColumn();
 
-            Cell cell = this.CAT.getCell(pointY, pointX - 1);
+            Cell cell = this.CAT.getCell(row, col - 1);
 
             if (cell != null) {
                 check = false;
@@ -155,10 +153,10 @@ public abstract class BasicBoard {
         Iterator<Cell> points = block.getCells().iterator();
         while (points.hasNext() && check) {
             Cell point = points.next();
-            int pointX = (int) point.getRow();
-            int pointY = (int) point.getColumn();
+            int row = (int) point.getRow();
+            int col = (int) point.getColumn();
 
-            Cell cell = this.CAT.getCell(pointY + 1, pointX);
+            Cell cell = this.CAT.getCell(row + 1, col);
 
             if (cell != null) {
                 check = false;
@@ -207,10 +205,10 @@ public abstract class BasicBoard {
         while (points.hasNext()) {
             Cell point = points.next();
 
-            int x = (int) point.getRow();
-            int y = (int) point.getColumn();
+            int row = (int) point.getRow();
+            int col = (int) point.getColumn();
 
-            this.CAT.setCell(y, x, block.getColor());
+            this.CAT.setCell(row, col, block.getColor());
         }
 
         this.linesCount += this.CAT.deleteLines();

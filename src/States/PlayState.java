@@ -42,9 +42,11 @@ public class PlayState extends BasicGameState {
 
     private float cellWidth, cellHeigth;
 
-    private int next_block_movement;
+    private int inputTick, downTick;
     private int tick;
     private int timer;
+
+    private boolean moveDown, moveLeft, moveRigth, rotate;
 
     @Override
     public int getID() {
@@ -60,95 +62,132 @@ public class PlayState extends BasicGameState {
         this.cellHeigth = gc.getHeight() / this.gameController.getBoardRowCount();
 
         this.tick = 150;
-        this.next_block_movement = this.tick;
+        this.inputTick = this.tick;
+        this.downTick = 2 * this.tick;
         this.timer = 0;
     }
 
     @Override
     public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-
-        for (int i = 0; i < this.gameController.getBoardRowCount(); i++) {
-            for (int j = 0; j < this.gameController.getBoardColumnCount(); j++) {
-                Shape shape = new Rectangle(j * this.cellWidth, i * this.cellHeigth, this.cellWidth, this.cellHeigth);
-                g.setColor(Color.lightGray);
-                g.draw(shape);
-                g.setColor(Color.white);
-                g.drawString(i + " " + j, j * this.cellWidth, i * this.cellHeigth);
-            }
-        }
-
-        g.setColor(Color.white);
-        // g.drawString("Lines: " + this.gameController.getLinesCount(), 0, 0);
-
+        // Gets the current Block and sets the color to the block's color.
         BasicBlock current = this.gameController.getCurrentBlock();
-
         g.setColor(current.getColor());
-
+        // Gets all the blocks that conforms the current block.
         Iterator<Cell> points = current.getCells().iterator();
-
+        // Draws the current block.
         while (points.hasNext()) {
             Cell point = points.next();
-
+            int x = (int) (point.getColumn() * this.cellWidth);
+            int y = (int) (point.getRow() * this.cellHeigth);
             g.setColor(point.getColor());
-            Shape shape = new Rectangle(point.getRow() * this.cellWidth, point.getColumn() * this.cellHeigth, this.cellWidth, this.cellHeigth);
+            Shape shape = new Rectangle(x, y, this.cellWidth, this.cellHeigth);
             g.fill(shape);
-
             g.setColor(Color.white);
             g.draw(shape);
+            
+            Shape helpLines = new Rectangle(x, y + this.cellHeigth, this.cellWidth, this.gameController.getBoardRowCount() * this.cellHeigth - y);
+            g.draw(helpLines);
+
         }
 
-        Iterator<Cell> cells = this.gameController.getCells();
-
+        // Gets the board's placed block.
+        Iterator<Cell> cells = this.gameController.getBoardCells();
+        // Draws the board cells.
         while (cells.hasNext()) {
-            Cell cell = cells.next();
-
-            g.setColor(cell.getColor());
-            Shape shape = new Rectangle(cell.getColumn() * this.cellWidth, cell.getRow() * this.cellHeigth, this.cellWidth, this.cellHeigth);
+            Cell point = cells.next();
+            int x = (int) (point.getColumn() * this.cellWidth);
+            int y = (int) (point.getRow() * this.cellHeigth);
+            g.setColor(point.getColor());
+            Shape shape = new Rectangle(x, y, this.cellWidth, this.cellHeigth);
             g.fill(shape);
             g.setColor(Color.white);
             g.draw(shape);
         }
-
     }
 
     @Override
     public void update(GameContainer gc, StateBasedGame sbg, int i) throws SlickException {
 
         this.timer += i;
-        this.next_block_movement -= i;
+        this.inputTick -= i;
+        this.downTick -= i;
 
-        if (this.next_block_movement <= 0) {
-            Input input = gc.getInput();
+        if (this.inputTick <= 0) {
 
-            if (input.isKeyDown(Input.KEY_A) || input.isKeyDown(Input.KEY_LEFT)) {
-                this.gameController.moveCurrentBlockLeft();
-            }
-
-            if (input.isKeyDown(Input.KEY_D) || input.isKeyDown(Input.KEY_RIGHT)) {
-                this.gameController.moveCurrentBlockRigth();
-            }
-
-            if (input.isKeyDown(Input.KEY_S) || input.isKeyDown(Input.KEY_DOWN)) {
+            if (this.moveDown) {
                 this.gameController.moveCurrentBlockDown();
             }
 
-            if (input.isKeyDown(Input.KEY_SPACE)) {
-                this.gameController.dropCurrentBlock();
+            if (this.moveLeft) {
+                this.gameController.moveCurrentBlockLeft();
             }
 
-            if (input.isKeyDown(Input.KEY_A) || input.isKeyDown(Input.KEY_UP)) {
+            if (this.moveRigth) {
+                this.gameController.moveCurrentBlockRigth();
+            }
+
+            if (this.rotate) {
                 this.gameController.rotateCurrentBlock();
             }
 
-            if (input.isKeyDown(Input.KEY_C)) {
-                this.gameController.saveBlock();
-            }
-
-            // this.board.moveCurrentBlockDown();
-            this.next_block_movement = this.tick;
-
+            this.inputTick = this.tick;
         }
 
+        if (this.downTick <= 0) {
+            this.gameController.moveCurrentBlockDown();
+            this.downTick = 5 * this.tick;
+        }
+
+    }
+
+    @Override
+    public void keyPressed(int key, char c) {
+        switch (key) {
+            case Input.KEY_A:
+            case Input.KEY_LEFT:
+                this.moveLeft = true;
+                break;
+            case Input.KEY_D:
+            case Input.KEY_RIGHT:
+                this.moveRigth = true;
+                break;
+            case Input.KEY_S:
+            case Input.KEY_DOWN:
+                this.moveDown = true;
+                break;
+            case Input.KEY_SPACE:
+                this.gameController.dropCurrentBlock();
+                break;
+            case Input.KEY_W:
+            case Input.KEY_UP:
+                this.rotate = true;
+                break;
+            case Input.KEY_C:
+                this.gameController.saveBlock();
+                break;
+        }
+    }
+
+    @Override
+    public void keyReleased(int key, char c) {
+        switch (key) {
+            case Input.KEY_A:
+            case Input.KEY_LEFT:
+                this.moveLeft = false;
+                break;
+            case Input.KEY_D:
+            case Input.KEY_RIGHT:
+                this.moveRigth = false;
+                break;
+            case Input.KEY_S:
+            case Input.KEY_DOWN:
+                this.moveDown = false;
+                break;
+            case Input.KEY_W:
+            case Input.KEY_UP:
+                this.rotate = false;
+                break;
+        }
     }
 
 }

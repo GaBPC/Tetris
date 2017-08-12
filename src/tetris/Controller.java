@@ -38,7 +38,7 @@ public class Controller {
     }
 
     public final BasicBlock createNewBlock() {
-        return BlocksFactory.createRandomBlock();
+        return BlocksFactory.getRandomBlock();
     }
 
     public BasicBlock getCurrentBlock() {
@@ -47,9 +47,9 @@ public class Controller {
 
     public void moveCurrentBlockRigth() {
 
-        float x = this.currentBlock.getRightmostCell();
+        float col = this.currentBlock.getRightmostCell().getColumn();
 
-        if (x < this.gameBoard.getColumnCount() - 1 && this.gameBoard.checkRigthMovement(this.currentBlock)) {
+        if (col < this.gameBoard.getColumnCount() - 1 && this.gameBoard.checkRigthMovement(this.currentBlock)) {
             this.currentBlock.moveRight();
         }
 
@@ -57,9 +57,9 @@ public class Controller {
 
     public void moveCurrentBlockLeft() {
 
-        float x = this.currentBlock.getLeftmostCell();
+        float col = this.currentBlock.getLeftmostCell().getColumn();
 
-        if (x > 0 && this.gameBoard.checkLeftMovement(this.currentBlock)) {
+        if (col > 0 && this.gameBoard.checkLeftMovement(this.currentBlock)) {
             this.currentBlock.moveLeft();
         }
 
@@ -67,9 +67,9 @@ public class Controller {
 
     public boolean moveCurrentBlockDown() {
 
-        float y = this.currentBlock.getLowestCell();
+        float row = this.currentBlock.getLowestCell().getRow();
 
-        if (y < this.gameBoard.getRowCount() - 1 && this.gameBoard.checkBottomMovement(this.currentBlock)) {
+        if (row < this.gameBoard.getRowCount() - 1 && this.gameBoard.checkBottomMovement(this.currentBlock)) {
             this.currentBlock.moveDown();
             return true;
         } else {
@@ -113,7 +113,7 @@ public class Controller {
         return this.gameBoard.getColumnCount();
     }
 
-    public Iterator<Cell> getCells() {
+    public Iterator<Cell> getBoardCells() {
         return this.gameBoard.getCells();
     }
 

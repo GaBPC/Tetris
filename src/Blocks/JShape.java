@@ -26,10 +26,10 @@ import org.newdawn.slick.Color;
  */
 public class JShape extends BasicBlock {
 
-    private static final boolean[][] model = new boolean[][]{{false, true, true}, {false, true, false}, {false, true, false}};
+    private static final boolean[][] MODEL = new boolean[][]{{false, true, true}, {false, true, false}, {false, true, false}};
 
     public JShape() {
-        super(JShape.model, Color.blue);
+        super(JShape.MODEL, Color.blue);
 
     }
 
@@ -38,11 +38,13 @@ public class JShape extends BasicBlock {
 
         ArrayList<Cell> cells = new ArrayList<>();
 
-        Cell pivotCell = super.getPivotCell(), cell1 = null, cell2 = null, cell3 = null;
+        Cell pivot = super.getPivotCell();
+        Cell cell1 = null;
+        Cell cell2 = null;
+        Cell cell3 = null;
 
-        // check where its bad assigned
-        int pivotRow = pivotCell.getColumn();
-        int pivotCol = pivotCell.getRow();
+        int pivotCol = pivot.getColumn();
+        int pivotRow = pivot.getRow();
 
         switch (this.actualRotation) {
             case NORMAL:
@@ -67,10 +69,10 @@ public class JShape extends BasicBlock {
                 break;
         }
 
+        cells.add(pivot);
         cells.add(cell1);
         cells.add(cell2);
         cells.add(cell3);
-        cells.add(new Cell(pivotRow, pivotCol));
 
         return cells.iterator();
     }

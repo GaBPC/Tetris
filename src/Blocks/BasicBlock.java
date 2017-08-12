@@ -51,14 +51,8 @@ public abstract class BasicBlock {
      */
     private boolean[][] model = null;
 
-    /**
-     * asd.
-     */
     protected int topRow = 0;
 
-    /**
-     * asd.
-     */
     protected int leftColumn = 0;
 
     /**
@@ -95,7 +89,7 @@ public abstract class BasicBlock {
     protected rotation actualRotation;
 
     /**
-     *
+     * The pivot cell to rotations.
      */
     protected Cell pivotCell = null;
 
@@ -112,34 +106,40 @@ public abstract class BasicBlock {
         this.model = model;
         this.color = color;
 
-        this.generatePoints();
+        this.points = this.generateCells();
 
     }
 
-    private void generatePoints() {
-        this.points = new ArrayList<>();
+    /**
+     * Function that generates the set of cells that form the block.
+     *
+     * @return An ArrayList of Cell wich contains the block's points.
+     */
+    private ArrayList<Cell> generateCells() {
+        ArrayList<Cell> ret = new ArrayList<>();
 
         for (int i = 0; i < model.length; i++) {
             for (int j = 0; j < model[i].length; j++) {
                 if (model[i][j] == true) {
-                    Cell cell = new Cell(j + this.leftColumn, i + this.topRow, this.getColor());
-                    this.points.add(cell);
+                    Cell cell = new Cell(i + this.topRow, j + this.leftColumn, this.getColor());
+                    ret.add(cell);
                     if (i == 1 && j == 1) {
                         this.pivotCell = cell;
                     }
                 }
             }
         }
+
+        return ret;
     }
 
     /**
-     * Function that puts the block back at the spawn cell
-     *
+     * Function that puts the block back at the spawn cell.
      */
     public void resetToSpawn() {
         this.leftColumn = 0;
         this.topRow = 0;
-        this.generatePoints();
+        this.points = this.generateCells();
     }
 
     /**
@@ -154,13 +154,9 @@ public abstract class BasicBlock {
     public abstract Iterator<Cell> cellsNeededToRotate();
 
     /**
-     * Function that calculates the position of the block once it has rotated.
-     * Uses a block model and rotates it 90º.Returns a rotated model.
-     *
-     * @param model the model to rotate. It won't be modified.
-     * @return a new model rotated.
+     * Function that rotates the block.
      */
-    public boolean[][] calculateRotation(boolean[][] model) {
+    public final void rotate() {
         boolean[][] modelTemp = new boolean[this.model[0].length][this.model.length];
 
         // Transposes the model.
@@ -179,40 +175,43 @@ public abstract class BasicBlock {
             }
         }
 
-        return modelTemp;
-
-    }
-
-    /**
-     * Function that rotates the block.
-     *
-     */
-    public final void rotate() {
+        this.model = modelTemp;
 
         this.actualRotation = this.actualRotation.next();
 
-        this.model = this.calculateRotation(this.model);
-
-        this.generatePoints();
+        this.points = this.generateCells();
     }
 
+    /**
+     * Moves the block one position down. This will cause each Cell forming the
+     * block to move down one position.
+     */
     public final void moveDown() {
-        this.points.stream().forEach((shape) -> {
-            shape.setColumn(shape.getColumn() + 1);
+        this.points.forEach((cell) -> {
+            cell.setRow(cell.getRow() + 1);
         });
+
         this.topRow += 1;
     }
 
+    /**
+     * Moves the block one position to the left. This will cause each Cell
+     * forming the block to move down one position.
+     */
     public final void moveLeft() {
         this.points.stream().forEach((shape) -> {
-            shape.setRow(shape.getRow() - 1);
+            shape.setColumn(shape.getColumn() - 1);
         });
         this.leftColumn -= 1;
     }
 
+    /**
+     * Moves the block one position to the rigth. This will cause each Cell
+     * forming the block to move down one position.
+     */
     public final void moveRight() {
         this.points.stream().forEach((shape) -> {
-            shape.setRow(shape.getRow() + 1);
+            shape.setColumn(shape.getColumn() + 1);
         });
         this.leftColumn += 1;
     }
@@ -232,12 +231,7 @@ public abstract class BasicBlock {
      * @return the iterator of Cell
      */
     public final ArrayList<Cell> getCells() {
-
         return this.points;
-    }
-
-    public Cell getPivotCell() {
-        return pivotCell;
     }
 
     /**
@@ -245,13 +239,23 @@ public abstract class BasicBlock {
      *
      * @return
      */
-    public final float getLowestCell() {
+    public Cell getPivotCell() {
+        return pivotCell;
+    }
 
-        float ret = 0;
+    /**
+     * Function that returns the cell whose position is the lowest. This is done
+     * by comparing in which row each cell is located.
+     *
+     * @return the indicated Cell.
+     */
+    public final Cell getLowestCell() {
+
+        Cell ret = new Cell(0, 0);
 
         for (Cell cell : this.points) {
-            if (cell.getColumn() > ret) {
-                ret = cell.getColumn();
+            if (cell.getRow() > ret.getRow()) {
+                ret = cell;
             }
         }
 
@@ -259,13 +263,19 @@ public abstract class BasicBlock {
 
     }
 
-    public final float getRightmostCell() {
+    /**
+     * Function that returns the cell whose position is to the right. This is
+     * done by comparing which column each cell is in.
+     *
+     * @return the indicated Cell.
+     */
+    public final Cell getRightmostCell() {
 
-        float ret = 0;
+        Cell ret = new Cell(0, 0);
 
         for (Cell cell : this.points) {
-            if (cell.getRow() > ret) {
-                ret = cell.getRow();
+            if (cell.getColumn() > ret.getColumn()) {
+                ret = cell;
             }
         }
 
@@ -273,13 +283,19 @@ public abstract class BasicBlock {
 
     }
 
-    public final float getLeftmostCell() {
+    /**
+     * Function that returns the cell whose position is to the left. This is
+     * done by comparing which column each cell is in.
+     *
+     * @return the indicated Cell.
+     */
+    public final Cell getLeftmostCell() {
 
-        float ret = 9999;
+        Cell ret = new Cell(9999, 9999);
 
         for (Cell cell : this.points) {
-            if (cell.getRow() < ret) {
-                ret = cell.getRow();
+            if (cell.getColumn() < ret.getColumn()) {
+                ret = cell;
             }
         }
 
